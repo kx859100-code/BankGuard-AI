@@ -1,0 +1,87 @@
+{
+  "rowCount": 10000,
+  "columnCount": 14,
+  "missingValues": 0,
+  "duplicateRows": 0,
+  "invalidCategories": 0,
+  "outliersDetected": 18,
+  "targetDistribution": {
+    "retained": 7963,
+    "churned": 2037,
+    "churnRatePercent": 20.37
+  },
+  "schemaValidation": "VALID",
+  "lastIngestionTimestamp": "2026-09-08T22:36:00Z",
+  "columns": [
+    {
+      "name": "CustomerId",
+      "type": "INTEGER",
+      "nullCount": 0,
+      "distinctCount": 10000
+    },
+    {
+      "name": "Surname",
+      "type": "VARCHAR(50)",
+      "nullCount": 0,
+      "distinctCount": 70
+    },
+    {
+      "name": "CreditScore",
+      "type": "INTEGER (350-850)",
+      "nullCount": 0,
+      "mean": 650.5
+    },
+    {
+      "name": "Geography",
+      "type": "CATEGORICAL [France, Germany, Spain]",
+      "nullCount": 0
+    },
+    {
+      "name": "Gender",
+      "type": "CATEGORICAL [Male, Female]",
+      "nullCount": 0
+    },
+    {
+      "name": "Age",
+      "type": "INTEGER (18-92)",
+      "nullCount": 0,
+      "mean": 38.9
+    },
+    {
+      "name": "Tenure",
+      "type": "INTEGER (0-10)",
+      "nullCount": 0,
+      "mean": 5.0
+    },
+    {
+      "name": "Balance",
+      "type": "DECIMAL (\u20ac0.00 - \u20ac250,898.09)",
+      "nullCount": 0
+    },
+    {
+      "name": "NumOfProducts",
+      "type": "INTEGER (1-4)",
+      "nullCount": 0
+    },
+    {
+      "name": "HasCrCard",
+      "type": "BOOLEAN (0, 1)",
+      "nullCount": 0
+    },
+    {
+      "name": "IsActiveMember",
+      "type": "BOOLEAN (0, 1)",
+      "nullCount": 0
+    },
+    {
+      "name": "EstimatedSalary",
+      "type": "DECIMAL (\u20ac)",
+      "nullCount": 0
+    },
+    {
+      "name": "Exited",
+      "type": "TARGET (0, 1)",
+      "nullCount": 0
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "totalCustomers": 10000,
+  "churnedCustomers": 2037,
+  "overallChurnRate": 20.37,
+  "riskDistribution": {
+    "critical": 718,
+    "high": 979,
+    "medium": 830,
+    "low": 7473
+  },
+  "highValueAtRiskCount": 1067,
+  "totalHighValueBalance": 142227004.25,
+  "totalBalanceExposed": 238421917.99,
+  "geographyChurn": [
+    {
+      "country": "France",
+      "customerCount": 5040,
+      "churnedCount": 512,
+      "churnRate": 10.16,
+      "averageBalance": 56349.0,
+      "highRiskCount": 358
+    },
+    {
+      "country": "Germany",
+      "customerCount": 2454,
+      "churnedCount": 1265,
+      "churnRate": 51.55,
+      "averageBalance": 120196.07,
+      "highRiskCount": 1144
+    },
+    {
+      "country": "Spain",
+      "customerCount": 2506,
+      "churnedCount": 260,
+      "churnRate": 10.38,
+      "averageBalance": 51878.43,
+      "highRiskCount": 195
+    }
+  ],
+  "ageChurn": [
+    {
+      "ageGroup": "<30",
+      "customerCount": 1973,
+      "churnedCount": 143,
+      "churnRate": 7.25
+    },
+    {
+      "ageGroup": "30\u201345",
+      "customerCount": 5591,
+      "churnedCount": 1043,
+      "churnRate": 18.65
+    },
+    {
+      "ageGroup": "46\u201360",
+      "customerCount": 2281,
+      "churnedCount": 789,
+      "churnRate": 34.59
+    },
+    {
+      "ageGroup": "60+",
+      "customerCount": 155,
+      "churnedCount": 62,
+      "churnRate": 40.0
+    }
+  ],
+  "genderChurn": [
+    {
+      "gender": "Female",
+      "customerCount": 4554,
+      "churnedCount": 1009,
+      "churnRate": 22.16
+    },
+    {
+      "gender": "Male",
+      "customerCount": 5446,
+      "churnedCount": 1028,
+      "churnRate": 18.88
+    }
+  ],
+  "productChurn": [
+    {
+      "products": "1 Product",
+      "customerCount": 5110,
+      "churnedCount": 1181,
+      "churnRate": 23.11
+    },
+    {
+      "products": "2 Products",
+      "customerCount": 4548,
+      "churnedCount": 646,
+      "churnRate": 14.2
+    },
+    {
+      "products": "3 Products",
+      "customerCount": 281,
+      "churnedCount": 171,
+      "churnRate": 60.85
+    },
+    {
+      "products": "4 Products",
+      "customerCount": 61,
+      "churnedCount": 39,
+      "churnRate": 63.93
+    }
+  ],
+  "activityChurn": [
+    {
+      "status": "Active",
+      "customerCount": 5155,
+      "churnedCount": 843,
+      "churnRate": 16.35
+    },
+    {
+      "status": "Inactive",
+      "customerCount": 4845,
+      "churnedCount": 1194,
+      "churnRate": 24.64
+    }
+  ],
+  "balanceChurn": [
+    {
+      "segment": "Zero Balance (\u20ac0)",
+      "customerCount": 3793,
+      "churnedCount": 382,
+      "churnRate": 10.07
+    },
+    {
+      "segment": "Low (<\u20ac50k)",
+      "customerCount": 183,
+      "churnedCount": 29,
+      "churnRate": 15.85
+    },
+    {
+      "segment": "Medium (\u20ac50k\u2013\u20ac120k)",
+      "customerCount": 3309,
+      "churnedCount": 831,
+      "churnRate": 25.11
+    },
+    {
+      "segment": "High (>\u20ac120k)",
+      "customerCount": 2715,
+      "churnedCount": 795,
+      "churnRate": 29.28
+    }
+  ],
+  "tenureChurn": [
+    {
+      "tenure": "0 yr",
+      "customerCount": 839,
+      "churnRate": 21.57
+    },
+    {
+      "tenure": "1 yr",
+      "customerCount": 919,
+      "churnRate": 21.22
+    },
+    {
+      "tenure": "2 yr",
+      "customerCount": 888,
+      "churnRate": 21.85
+    },
+    {
+      "tenure": "3 yr",
+      "customerCount": 868,
+      "churnRate": 19.93
+    },
+    {
+      "tenure": "4 yr",
+      "customerCount": 895,
+      "churnRate": 19.44
+    },
+    {
+      "tenure": "5 yr",
+      "customerCount": 911,
+      "churnRate": 18.99
+    },
+    {
+      "tenure": "6 yr",
+      "customerCount": 941,
+      "churnRate": 21.79
+    },
+    {
+      "tenure": "7 yr",
+      "customerCount": 932,
+      "churnRate": 18.24
+    },
+    {
+      "tenure": "8 yr",
+      "customerCount": 935,
+      "churnRate": 21.39
+    },
+    {
+      "tenure": "9 yr",
+      "customerCount": 905,
+      "churnRate": 19.23
+    },
+    {
+      "tenure": "10 yr",
+      "customerCount": 967,
+      "churnRate": 20.48
+    }
+  ],
+  "customerSegments": [
+    {
+      "clusterId": "cluster_1",
+      "name": "Active Core Anchors",
+      "description": "Engaged account holders with 1-2 core services and stable balances.",
+      "customerCount": 7854,
+      "churnedCount": 555,
+      "churnRate": 7.07,
+      "averageBalance": 61295.46,
+      "recommendedAction": "Loyalty rewards & tiered deposit yield booster"
+    },
+    {
+      "clusterId": "cluster_2",
+      "name": "Affluent Seniors",
+      "description": "Mature customers (Age 45+) holding substantial deposits sensitive to wealth pricing.",
+      "customerCount": 788,
+      "churnedCount": 256,
+      "churnRate": 32.49,
+      "averageBalance": 132734.92,
+      "recommendedAction": "Private banking wealth advisor consultation & customized deposit yield"
+    },
+    {
+      "clusterId": "cluster_3",
+      "name": "Inactive High-Risk",
+      "description": "Dormant accounts with negligible transactional or digital interaction.",
+      "customerCount": 1016,
+      "churnedCount": 1016,
+      "churnRate": 100.0,
+      "averageBalance": 96586.48,
+      "recommendedAction": "Digital re-onboarding concierge & transaction activity incentive"
+    },
+    {
+      "clusterId": "cluster_4",
+      "name": "Multi-Product Friction",
+      "description": "Holders of 3+ products experiencing bundling dissatisfaction or fee friction.",
+      "customerCount": 342,
+      "churnedCount": 210,
+      "churnRate": 61.4,
+      "averageBalance": 72590.63,
+      "recommendedAction": "Product simplification, fee waiver audit, and unified relationship manager"
+    }
+  ],
+  "globalShap": [
+    {
+      "feature": "Age",
+      "importance": 0.342,
+      "category": "Demographic",
+      "direction": "Higher age (45+) increases attrition probability"
+    },
+    {
+      "feature": "NumOfProducts",
+      "importance": 0.284,
+      "category": "Product",
+      "direction": "3+ products triggers steep churn spike; 2 is optimal anchor"
+    },
+    {
+      "feature": "IsActiveMember",
+      "importance": 0.248,
+      "category": "Engagement",
+      "direction": "Account inactivity strongly elevates churn probability"
+    },
+    {
+      "feature": "Geography_Germany",
+      "importance": 0.196,
+      "category": "Geographic",
+      "direction": "German retail banking market shows 2x higher switching mobility"
+    },
+    {
+      "feature": "Balance",
+      "importance": 0.162,
+      "category": "Financial",
+      "direction": "High liquid balances sensitive to competitor yield arbitrage"
+    },
+    {
+      "feature": "CreditScore",
+      "importance": 0.098,
+      "category": "Risk",
+      "direction": "Credit scores <580 elevate stress closure risk"
+    },
+    {
+      "feature": "Gender_Female",
+      "importance": 0.082,
+      "category": "Demographic",
+      "direction": "Female cohort exhibits slightly higher switching propensity"
+    },
+    {
+      "feature": "EstimatedSalary",
+      "importance": 0.041,
+      "category": "Financial",
+      "direction": "Moderate uniform impact across income brackets"
+    }
+  ],
+  "modelsComparison": [
+    {
+      "modelName": "XGBoost Classifier",
+      "version": "v1.4",
+      "trainingDate": "2026-09-01",
+      "datasetVersion": "European_Bank_2025_v1",
+      "accuracy": 86.4,
+      "precision": 78.1,
+      "recall": 69.2,
+      "f1Score": 73.4,
+      "rocAuc": 0.874,
+      "prAuc": 0.742,
+      "status": "PRODUCTION (CHAMPION)",
+      "latencyMs": 2.4,
+      "notes": "Best overall F1 score and precision on minority churn class. Platt probability calibration applied."
+    },
+    {
+      "modelName": "Random Forest Ensemble",
+      "version": "v2.1",
+      "trainingDate": "2026-08-28",
+      "datasetVersion": "European_Bank_2025_v1",
+      "accuracy": 85.1,
+      "precision": 75.5,
+      "recall": 64.8,
+      "f1Score": 69.7,
+      "rocAuc": 0.852,
+      "prAuc": 0.718,
+      "status": "SHADOW / CANDIDATE",
+      "latencyMs": 4.1,
+      "notes": "Robust tree bagging, slightly lower recall on high-balance German customer segment."
+    },
+    {
+      "modelName": "Logistic Regression (ElasticNet)",
+      "version": "v1.0",
+      "trainingDate": "2026-08-20",
+      "datasetVersion": "European_Bank_2025_v1",
+      "accuracy": 81.2,
+      "precision": 62.0,
+      "recall": 46.1,
+      "f1Score": 52.9,
+      "rocAuc": 0.772,
+      "prAuc": 0.584,
+      "status": "BASELINE",
+      "latencyMs": 0.6,
+      "notes": "Linear baseline model. Captures broad age and activity trends but misses nonlinear product interactions."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "BankGuard AI",
+  "description": "European Banking Customer Intelligence, Churn Prediction & Retention Optimization Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
