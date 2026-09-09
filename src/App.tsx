@@ -16,7 +16,7 @@ import {
   Building2,
   ArrowDownToLine
 } from 'lucide-react';
-import { ActiveTab, Role, Customer, CRMCase, AuditLog, ModelTrainingRun, CRMStatus } from './types';
+import { ActiveTab, Role, Customer, CRMCase, AuditLog, ModelTrainingRun, CRMStatus, UserSession } from './types';
 import { ANALYTICS_SUMMARY } from './data/analyticsSummary';
 import { CUSTOMER_SAMPLE } from './data/customerSample';
 import {
@@ -39,6 +39,7 @@ import { RAGAssistant } from './components/RAGAssistant';
 import { CRMWorkflow } from './components/CRMWorkflow';
 import { GoogleSheetsIntegration } from './components/GoogleSheetsIntegration';
 import { DataQualityCenter } from './components/DataQualityCenter';
+import { DataLineage } from './components/DataLineage';
 import { SecurityGovernance } from './components/SecurityGovernance';
 import { Customer360Modal } from './components/Customer360Modal';
 import { OperationsCenter } from './components/OperationsCenter';
@@ -52,6 +53,21 @@ export default function App() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRetrainingActive, setIsRetrainingActive] = useState(false);
+
+  // Authenticated Enterprise Session State
+  const [userSession, setUserSession] = useState<UserSession>({
+    userId: 'USR-849201',
+    email: 'admin.infra@bankguard.eu',
+    name: 'Admin Infrastructure',
+    role: 'Admin',
+    tenantId: 'tenant-hq-001',
+    tenantName: 'BankGuard Group HQ (Frankfurt)',
+    authMethod: 'PASSWORD',
+    jwtToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.prod_sample_token',
+    refreshToken: 'rt_bankguard_prod_sec_99',
+    expiresAt: new Date(Date.now() + 8 * 3600 * 1000).toISOString(),
+    mfaVerified: true,
+  });
 
   // Model Training Runs
   const [trainingRuns, setTrainingRuns] = useState<ModelTrainingRun[]>([
@@ -357,7 +373,27 @@ export default function App() {
     addAuditLog('DATASET_EXPORT_CSV', `Exported executive churn intelligence CSV report.`, 'RAW_DATA_EXPORT');
   };
 
-  // Role Authentication Transition
+  // Enterprise Authentication Handler (Company Email/Password + Google OAuth)
+  const handleLoginSuccess = (session: UserSession) => {
+    setUserSession(session);
+    setCurrentRole(session.role);
+    if (session.role === 'Client') {
+      setActiveTab('client-portal');
+    } else if (session.role === 'Head Office Operator') {
+      setActiveTab('operations');
+    } else if (session.role === 'Auditing Manager') {
+      setActiveTab('settings');
+    } else {
+      setActiveTab('dashboard');
+    }
+    addAuditLog(
+      'LOGIN_SUCCESS',
+      `User ${session.email} successfully authenticated via ${session.authMethod}. Tenant: ${session.tenantName} (${session.tenantId}). Assigned Role: ${session.role}.`,
+      'AUTH_SERVICE',
+      'SUCCESS'
+    );
+  };
+
   const handleLoginAsRole = (newRole: Role, email: string) => {
     setCurrentRole(newRole);
     if (newRole === 'Client') {
@@ -398,6 +434,9 @@ export default function App() {
       'sheets': 'sheets',
       'data-quality': 'data-quality',
       'quality': 'data-quality',
+      'data-lineage': 'data-lineage',
+      'lineage': 'data-lineage',
+      'pipeline': 'data-lineage',
       'settings': 'settings',
       'governance': 'settings'
     };
@@ -609,6 +648,10 @@ export default function App() {
             <DataQualityCenter />
           )}
 
+          {activeTab === 'data-lineage' && (
+            <DataLineage />
+          )}
+
           {activeTab === 'settings' && (
             <SecurityGovernance
               currentRole={currentRole}
@@ -637,7 +680,8 @@ export default function App() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         currentRole={currentRole}
-        onLoginAsRole={handleLoginAsRole}
+        onLoginSuccess={handleLoginSuccess}
+        onLogAuditEvent={addAuditLog}
       />
     </div>
   );

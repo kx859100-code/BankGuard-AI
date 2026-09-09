@@ -16,6 +16,7 @@ import {
   Cpu,
   Layers,
   Building2,
+  GitCommit,
   LogOut,
   ChevronRight
 } from 'lucide-react';
@@ -64,7 +65,8 @@ export const Navigation: React.FC<NavigationProps> = ({
     // Governance & Models
     { id: 'model-center', label: 'Model Center & Retraining', icon: Cpu, badge: 'MLOps', category: 'Governance', allowedRoles: ['Admin', 'Auditing Manager'] },
     { id: 'sheets', label: 'Google Sheets & Sync', icon: FileSpreadsheet, badge: 'OAuth/API', category: 'Governance', allowedRoles: ['Admin', 'Manager'] },
-    { id: 'data-quality', label: 'Data Quality & Lineage', icon: Database, badge: '100%', category: 'Governance', allowedRoles: ['Admin', 'Manager', 'Auditing Manager'] },
+    { id: 'data-quality', label: 'Data Quality Center', icon: Database, badge: '100%', category: 'Governance', allowedRoles: ['Admin', 'Manager', 'Auditing Manager'] },
+    { id: 'data-lineage', label: 'Data Lineage & Pipeline', icon: GitCommit, badge: 'Flow', category: 'Governance', allowedRoles: ['Admin', 'Manager', 'Auditing Manager', 'Viewer'] },
     { id: 'settings', label: 'Governance & RBAC', icon: ShieldCheck, badge: currentRole, category: 'Governance', allowedRoles: ['Admin', 'Manager', 'Head Office Operator', 'Auditing Manager', 'Viewer'] },
 
     // Client Portal (Isolated)

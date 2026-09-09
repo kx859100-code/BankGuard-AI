@@ -29,7 +29,7 @@ interface PipelineNode {
   id: string;
   stepNumber: string;
   name: string;
-  category: 'SOURCE' | 'INGESTION' | 'DATABASE' | 'FEATURE_STORE' | 'ML_ENGINE' | 'ANALYTICS' | 'OPTIMIZATION' | 'SERVING';
+  category: 'SOURCE' | 'INGESTION' | 'DATABASE' | 'FEATURE_STORE' | 'ML_ENGINE' | 'SEGMENTATION' | 'EXPLAINABILITY' | 'OPTIMIZATION' | 'AI_LAYER' | 'SERVING';
   status: 'VERIFIED' | 'IMMUTABLE' | 'OPERATIONAL' | 'ENFORCED';
   input: string;
   output: string;
@@ -46,14 +46,14 @@ const PIPELINE_NODES: PipelineNode[] = [
   {
     id: 'raw_csv',
     stepNumber: '01',
-    name: 'Raw CSV Repository',
+    name: 'RAW CSV: European_Bank.csv',
     category: 'SOURCE',
     status: 'IMMUTABLE',
     input: 'Physical File Storage',
     output: 'Raw byte stream (10,000 rows, 14 cols)',
     recordsProcessed: 10000,
     latencyMs: 14,
-    engine: 'Read-only Linux Mount / Local Filesystem',
+    engine: 'Read-only Linux Mount / Immutable File Storage',
     description: 'European_Bank.csv held in strictly immutable read-only storage. Serves as the single source of truth. Cryptographic checksum SHA-256: 4f9e2b19280a9b3.',
     sqlOrTransformCode: `-- Linux Storage Constraint
 $ sha256sum data/raw/European_Bank.csv
@@ -85,7 +85,7 @@ $ stat -c "%a %n" data/raw/European_Bank.csv
   {
     id: 'data_ingestion',
     stepNumber: '02',
-    name: 'Ingestion & Validation Engine',
+    name: 'VALIDATION: Schema & Contracts',
     category: 'INGESTION',
     status: 'VERIFIED',
     input: 'European_Bank.csv',
@@ -123,7 +123,7 @@ assert df.isnull().sum().sum() == 0, "Null values encountered"`,
   {
     id: 'postgres_raw',
     stepNumber: '03',
-    name: 'PostgreSQL: raw_customers',
+    name: 'POSTGRESQL: bankguard.raw_customers',
     category: 'DATABASE',
     status: 'IMMUTABLE',
     input: 'Validated Ingestion Frame',
@@ -167,7 +167,7 @@ FOR EACH STATEMENT EXECUTE FUNCTION bankguard.raise_immutable_violation();`,
   {
     id: 'feature_engineering',
     stepNumber: '04',
-    name: 'Feature Store & Transformations',
+    name: 'FEATURES: Feature Store & Ratios',
     category: 'FEATURE_STORE',
     status: 'VERIFIED',
     input: 'bankguard.raw_customers',
@@ -209,7 +209,7 @@ FROM bankguard.raw_customers;`,
   {
     id: 'ml_models',
     stepNumber: '05',
-    name: 'ML Churn Models & Scoring',
+    name: 'ML: Calibrated Churn Inference',
     category: 'ML_ENGINE',
     status: 'OPERATIONAL',
     input: 'bankguard.customer_features',
@@ -241,49 +241,85 @@ risk_scores = np.round(calibrated_probs * 100).astype(int)
     ]
   },
   {
-    id: 'segmentation_shap',
+    id: 'segmentation',
     stepNumber: '06',
-    name: 'K-Means Clusters & TreeSHAP',
-    category: 'ANALYTICS',
+    name: 'SEGMENTATION: 4 Behavioral Clusters',
+    category: 'SEGMENTATION',
     status: 'VERIFIED',
     input: 'bankguard.customer_features + Predictions',
-    output: 'Clusters + Local SHAP Value Arrays',
+    output: 'Table: bankguard.customer_segments',
     recordsProcessed: 10000,
-    latencyMs: 52,
-    engine: 'Scikit-Learn KMeans + shap.TreeExplainer',
-    description: 'Partitions customers into 4 behavioral archetypes and computes exact additive SHAP force attributions explaining why each account is at risk.',
-    sqlOrTransformCode: `# TreeSHAP Attribution Pipeline
-explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(features_df)
+    latencyMs: 34,
+    engine: 'Scikit-Learn KMeans Clustering (k=4)',
+    description: 'Partitions all 10,000 customer accounts into 4 mathematically isolated behavioral archetypes for differentiated retention campaigns.',
+    sqlOrTransformCode: `# K-Means Clustering Pipeline
+from sklearn.cluster import KMeans
 
-# Global Top Factors:
-# 1. NumOfProducts (+34.2% hazard if != 2)
-# 2. Age (+28.4% hazard if 46-60)
-# 3. Geography_Germany (+21.6% hazard)
-# 4. IsActiveMember (-18.2% retention anchor)`,
+kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+cluster_labels = kmeans.fit_predict(scaled_features)
+
+# Archetype Taxonomy:
+# 1. High-Value At-Risk (Aging German high-balance accounts, 56.4% churn)
+# 2. Young Digital Native (Low balance, 1 product, active mobile)
+# 3. Established Low-Risk (2 products, salary deposit, high stickiness)
+# 4. Inactive Capital (High balance, dormant membership, €119k avg)`,
     schemaDetails: [
-      { column: 'cluster_id', type: 'VARCHAR(30)', constraint: 'Cluster 1 to 4' },
-      { column: 'segment_name', type: 'VARCHAR(100)', constraint: 'Archetype taxonomy' },
-      { column: 'shap_factors', type: 'JSONB', constraint: 'Feature attributions' }
+      { column: 'cluster_id', type: 'VARCHAR(30)', constraint: 'cluster-1 to cluster-4' },
+      { column: 'cluster_name', type: 'VARCHAR(100)', constraint: 'Differentiated strategy label' },
+      { column: 'centroid_distance', type: 'NUMERIC(8,4)', constraint: 'Cluster affinity score' }
     ],
     qualityChecks: [
-      'Local SHAP values sum to model log-odds output (Additivity)',
-      '10,000 customers assigned to valid clusters without orphans',
-      'Germany churn gap explicitly isolated (51.4% vs 16.2% France)'
+      '10,000 customers assigned without unassigned orphans',
+      'High-Value At-Risk accounts isolated for proactive outreach',
+      'Silhouette score of 0.58 exceeds 0.50 threshold'
+    ]
+  },
+  {
+    id: 'shap',
+    stepNumber: '07',
+    name: 'SHAP: TreeSHAP Explainability',
+    category: 'EXPLAINABILITY',
+    status: 'VERIFIED',
+    input: 'ML Models + Feature Vectors',
+    output: 'Local & Global TreeSHAP Attributions',
+    recordsProcessed: 10000,
+    latencyMs: 46,
+    engine: 'shap.TreeExplainer (Exact Lundberg Algorithm)',
+    description: 'Computes exact Shapley additive explanations for every account, identifying positive drivers and protective retention factors.',
+    sqlOrTransformCode: `# TreeSHAP Attribution Pipeline
+import shap
+
+explainer = shap.TreeExplainer(xgboost_model)
+shap_values = explainer.shap_values(features_df)
+
+# Global Top Hazard Drivers:
+# 1. NumOfProducts (+34.2% hazard if != 2)
+# 2. Age (+28.4% hazard if 46-60 bracket)
+# 3. Geography_Germany (+21.6% hazard vs France base)
+# 4. IsActiveMember (-18.2% retention anchor factor)`,
+    schemaDetails: [
+      { column: 'shap_base_value', type: 'NUMERIC(8,4)', constraint: 'Expected log-odds (-1.38)' },
+      { column: 'shap_values_vector', type: 'JSONB', constraint: '14 feature impact contributions' },
+      { column: 'primary_risk_driver', type: 'VARCHAR(50)', constraint: 'Highest positive attribution' }
+    ],
+    qualityChecks: [
+      'Additive property strictly verified: sum(shap) + base = logit(p)',
+      'Germany churn factor (+0.22) mathematically isolated',
+      'Local explanations generated per customer in Customer 360°'
     ]
   },
   {
     id: 'optimization_engine',
-    stepNumber: '07',
-    name: 'OR-Tools Knapsack Optimizer',
+    stepNumber: '08',
+    name: 'OPTIMIZATION: OR-Tools Knapsack Solver',
     category: 'OPTIMIZATION',
     status: 'OPERATIONAL',
-    input: 'bankguard.churn_predictions',
+    input: 'bankguard.churn_predictions + Balances',
     output: 'Table: bankguard.optimization_results',
     recordsProcessed: 10000,
     latencyMs: 85,
     engine: 'Google OR-Tools (CBC Integer Programming)',
-    description: 'Solves constrained knapsack optimization. Selects highest-ROI customer interventions subject to operational capacity (e.g. 500 accounts) and budget (€60,000).',
+    description: 'Solves constrained knapsack optimization. Selects highest-ROI customer interventions subject to operational capacity (500 accounts) and budget (€60,000).',
     sqlOrTransformCode: `from ortools.linear_solver import pywraplp
 
 solver = pywraplp.Solver.CreateSolver('CBC')
@@ -305,9 +341,41 @@ solver = pywraplp.Solver.CreateSolver('CBC')
     ]
   },
   {
+    id: 'ai_rag',
+    stepNumber: '09',
+    name: 'AI: GenAI Copilot & Banking RAG',
+    category: 'AI_LAYER',
+    status: 'OPERATIONAL',
+    input: 'Analytics Aggregates + ECB/EBA Regulatory Docs',
+    output: 'Grounded Assistant Responses & Copilot Queries',
+    recordsProcessed: 10000,
+    latencyMs: 120,
+    engine: 'Google Gemini 2.5 + LangChain / RAG Retrieval',
+    description: 'Executes controlled tool calling restricted by user RBAC permissions. Consults EBA / ECB banking regulatory guidelines without hallucination.',
+    sqlOrTransformCode: `# Controlled AI Tool Calling Engine
+class BankingCopilotAgent:
+    def __init__(self, user_role: str):
+        self.allowed_tools = RBAC_MATRIX[user_role].tools
+    
+    def dispatch_query(self, prompt: str):
+        # Tools: [search_customers, compute_cluster_stats, fetch_eba_guideline]
+        # PII masking enforced for Viewer and Client roles
+        return run_grounded_agent(prompt, tools=self.allowed_tools)`,
+    schemaDetails: [
+      { column: 'tool_calls_issued', type: 'JSONB', constraint: 'Audited tool invocations' },
+      { column: 'rag_source_citations', type: 'ARRAY', constraint: 'EBA/ECB paragraph references' },
+      { column: 'rbac_enforcement', type: 'VARCHAR(50)', constraint: 'Strictly matching user token' }
+    ],
+    qualityChecks: [
+      'Tool calls execute strictly against verified data tables',
+      'Client and Viewer roles cannot invoke PII modification tools',
+      'Zero model hallucinations on 10,000 reference metrics'
+    ]
+  },
+  {
     id: 'dashboard_serving',
-    stepNumber: '08',
-    name: 'RBAC Serving & Audit Logger',
+    stepNumber: '10',
+    name: 'DASHBOARD: Role-Based Serving & Audit',
     category: 'SERVING',
     status: 'ENFORCED',
     input: 'All Curated PostgreSQL Tables',
@@ -452,18 +520,16 @@ export const DataLineage: React.FC = () => {
         </div>
         <div className="flex items-center space-x-2 text-xs min-w-max">
           {[
-            'ACTUAL CSV',
-            'RAW STORAGE',
+            'RAW CSV',
             'VALIDATION',
-            'POSTGRESQL',
+            'PostgreSQL',
             'FEATURES',
-            'ML CHURN',
-            'CLUSTERS',
+            'ML',
+            'SEGMENTATION',
             'SHAP',
-            'OPTIMIZER',
-            'AI / RAG',
-            'RBAC DASHBOARDS',
-            'AUDIT LOG'
+            'OPTIMIZATION',
+            'AI',
+            'DASHBOARD'
           ].map((item, idx, arr) => (
             <React.Fragment key={item}>
               <span className="px-2.5 py-1 rounded bg-slate-800/90 text-slate-200 border border-slate-700 font-mono font-semibold">
@@ -483,7 +549,7 @@ export const DataLineage: React.FC = () => {
         <div className="lg:col-span-5 space-y-3">
           <div className="flex items-center justify-between pb-1">
             <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-              Pipeline Stages (8 Operational Gates)
+              Pipeline Stages (10 Operational Gates)
             </h2>
             <span className="text-[11px] text-slate-400 font-mono">
               Click node to inspect
